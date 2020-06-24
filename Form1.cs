@@ -37,7 +37,7 @@ namespace VKClips
             JObject jObject = JObject.Parse(link);
             string uploadURL = jObject.SelectToken("$.response.upload_url").Value<string>();
             WebClient webClient = new WebClient();
-            webClient.UploadFile(uploadURL, file);
+            return webClient.UploadFile(uploadURL, file);
 
         }
         private void TestApi()
@@ -54,7 +54,7 @@ namespace VKClips
         {
             if (!char.IsLetterOrDigit(e.KeyChar) && !char.IsControl(e.KeyChar)) e.Handled = true;
         }
-        private async void ChangeColor(bool test)
+        private void ChangeColor(bool test)
         {
             if (test)
             {
@@ -112,6 +112,7 @@ namespace VKClips
                 }
                 param.Add("file_size", new FileInfo(file).Length.ToString());
                 UploadClip(file, param);
+                MessageBox.Show("Готово.");
             }
         }
 
