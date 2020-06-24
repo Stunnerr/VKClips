@@ -37,7 +37,7 @@ namespace VKClips
             JObject jObject = JObject.Parse(link);
             string uploadURL = jObject.SelectToken("$.response.upload_url").Value<string>();
             WebClient webClient = new WebClient();
-            return webClient.UploadFile(uploadURL, file);
+            webClient.UploadFile(uploadURL, file);
 
         }
         private void TestApi()
@@ -112,7 +112,6 @@ namespace VKClips
                 }
                 param.Add("file_size", new FileInfo(file).Length.ToString());
                 UploadClip(file, param);
-                MessageBox.Show("Готово.");
             }
         }
 
