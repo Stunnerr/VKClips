@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -43,7 +44,13 @@
             this.Description = new System.Windows.Forms.TextBox();
             this.GroupL = new System.Windows.Forms.Label();
             this.GID = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.path = new System.Windows.Forms.ColumnHeader();
+            this.name = new System.Windows.Forms.ColumnHeader();
+            this.desc = new System.Windows.Forms.ColumnHeader();
+            this.id = new System.Windows.Forms.ColumnHeader();
+            this.Add = new System.Windows.Forms.Button();
+            this.Fade = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label1
@@ -51,7 +58,7 @@
             this.label1.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(527, 67);
+            this.label1.Size = new System.Drawing.Size(609, 67);
             this.label1.TabIndex = 0;
             this.label1.Text = "VKClips";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -72,20 +79,21 @@
             this.token.Location = new System.Drawing.Point(121, 90);
             this.token.MaxLength = 100;
             this.token.Name = "token";
-            this.token.Size = new System.Drawing.Size(418, 23);
+            this.token.Size = new System.Drawing.Size(500, 23);
             this.token.TabIndex = 2;
             this.token.UseSystemPasswordChar = true;
+            this.token.Enter += new System.EventHandler(this.token_Enter);
             this.token.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tokenInput);
             this.token.Leave += new System.EventHandler(this.CheckToken);
             // 
             // Execute
             // 
             this.Execute.Enabled = false;
-            this.Execute.Location = new System.Drawing.Point(12, 257);
+            this.Execute.Location = new System.Drawing.Point(316, 236);
             this.Execute.Name = "Execute";
-            this.Execute.Size = new System.Drawing.Size(527, 64);
+            this.Execute.Size = new System.Drawing.Size(305, 34);
             this.Execute.TabIndex = 3;
-            this.Execute.Text = "ВЗЛОМ";
+            this.Execute.Text = "Загрузить всё";
             this.Execute.UseVisualStyleBackColor = true;
             this.Execute.Click += new System.EventHandler(this.Execute_Click);
             // 
@@ -98,7 +106,7 @@
             // 
             this.FPath.Location = new System.Drawing.Point(121, 120);
             this.FPath.Name = "FPath";
-            this.FPath.Size = new System.Drawing.Size(393, 23);
+            this.FPath.Size = new System.Drawing.Size(164, 23);
             this.FPath.TabIndex = 4;
             // 
             // PathL
@@ -113,7 +121,7 @@
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(513, 120);
+            this.button1.Location = new System.Drawing.Point(284, 120);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(26, 23);
             this.button1.TabIndex = 5;
@@ -126,7 +134,7 @@
             // 
             this.Title.Location = new System.Drawing.Point(121, 149);
             this.Title.Name = "Title";
-            this.Title.Size = new System.Drawing.Size(418, 23);
+            this.Title.Size = new System.Drawing.Size(189, 23);
             this.Title.TabIndex = 6;
             // 
             // TitleL
@@ -151,7 +159,7 @@
             // 
             this.Description.Location = new System.Drawing.Point(121, 178);
             this.Description.Name = "Description";
-            this.Description.Size = new System.Drawing.Size(418, 23);
+            this.Description.Size = new System.Drawing.Size(189, 23);
             this.Description.TabIndex = 6;
             // 
             // GroupL
@@ -165,29 +173,76 @@
             // 
             // GID
             // 
-            this.GID.Enabled = false;
             this.GID.Location = new System.Drawing.Point(121, 207);
             this.GID.Name = "GID";
-            this.GID.Size = new System.Drawing.Size(393, 23);
+            this.GID.Size = new System.Drawing.Size(189, 23);
             this.GID.TabIndex = 6;
             // 
-            // checkBox1
+            // listView1
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(520, 212);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 8;
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.GIDCheck);
+            this.listView1.Activation = System.Windows.Forms.ItemActivation.OneClick;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.path,
+            this.name,
+            this.desc,
+            this.id});
+            this.listView1.FullRowSelect = true;
+            this.listView1.GridLines = true;
+            this.listView1.HideSelection = false;
+            this.listView1.LabelWrap = false;
+            this.listView1.Location = new System.Drawing.Point(316, 119);
+            this.listView1.Name = "listView1";
+            this.listView1.ShowGroups = false;
+            this.listView1.Size = new System.Drawing.Size(305, 111);
+            this.listView1.TabIndex = 9;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            // 
+            // path
+            // 
+            this.path.Name = "path";
+            this.path.Text = "Путь";
+            // 
+            // name
+            // 
+            this.name.Name = "name";
+            this.name.Text = "Имя";
+            // 
+            // desc
+            // 
+            this.desc.Name = "desc";
+            this.desc.Text = "Описание";
+            this.desc.Width = 100;
+            // 
+            // id
+            // 
+            this.id.Name = "id";
+            this.id.Text = "ID группы";
+            this.id.Width = 80;
+            // 
+            // Add
+            // 
+            this.Add.Location = new System.Drawing.Point(121, 236);
+            this.Add.Name = "Add";
+            this.Add.Size = new System.Drawing.Size(189, 34);
+            this.Add.TabIndex = 10;
+            this.Add.Text = "Добавить";
+            this.Add.UseVisualStyleBackColor = true;
+            this.Add.Click += new System.EventHandler(this.AddTask);
+            // 
+            // Fade
+            // 
+            this.Fade.Interval = 10;
+            this.Fade.Tick += new System.EventHandler(this.Fade_Tick);
             // 
             // Form
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(551, 333);
-            this.Controls.Add(this.checkBox1);
+            this.ClientSize = new System.Drawing.Size(633, 282);
+            this.Controls.Add(this.Add);
+            this.Controls.Add(this.listView1);
             this.Controls.Add(this.GID);
             this.Controls.Add(this.GroupL);
             this.Controls.Add(this.Description);
@@ -201,9 +256,11 @@
             this.Controls.Add(this.token);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Form";
-            this.Text = "VKClips v1.0";
+            this.Text = "VKClips v1.1";
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Form_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Form_DragEnter);
             this.ResumeLayout(false);
@@ -227,7 +284,13 @@
         private System.Windows.Forms.TextBox Description;
         private System.Windows.Forms.Label GroupL;
         private System.Windows.Forms.TextBox GID;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader path;
+        private System.Windows.Forms.ColumnHeader name;
+        private System.Windows.Forms.ColumnHeader desc;
+        private System.Windows.Forms.ColumnHeader id;
+        private System.Windows.Forms.Button Add;
+        private System.Windows.Forms.Timer Fade;
     }
 }
 

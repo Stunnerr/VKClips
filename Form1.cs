@@ -1,17 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
 
 namespace VKClips
 {
     public partial class Form : System.Windows.Forms.Form
     {
         string access_token = "";
+        int ticks = 0;
+        Color start;
+        Color end;
+        double offR;
+        double offG;
+        double offB;
         public Form()
         {
             InitializeComponent();
@@ -19,7 +25,7 @@ namespace VKClips
         private string UploadApi(Dictionary<string, string> param = null)
         {
             param ??= new Dictionary<string, string>();
-            WebClient webClient = new WebClient();
+            System.Net.WebClient webClient = new System.Net.WebClient();
             webClient.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
             webClient.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
             webClient.QueryString.Add("v", "5.107");
@@ -45,9 +51,9 @@ namespace VKClips
             WebClient webClient = new WebClient();
             webClient.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
             webClient.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-            webClient.QueryString.Add("v", "5.107");
+            webClient.QueryString.Add("v", "5.123");
             webClient.QueryString.Add("access_token", access_token);
-            ChangeColor(webClient.DownloadString("https://api.vk.com/method/execute").Contains("\"error_code\":5"));
+            ChangeColor(!webClient.DownloadString("https://api.vk.com/method/execute").Contains("{\"response\":null}"));
 
         }
         private void tokenInput(object sender, KeyPressEventArgs e)
@@ -58,14 +64,21 @@ namespace VKClips
         {
             if (test)
             {
-                token.BackColor = Color.Red;
+                start = token.BackColor;
+                end = Color.Red;
+                offR = (double)(start.R - end.R) / 50;
+                offG = (double)(start.G - end.G) / 50;
+                offB = (double)(start.B - end.B) / 50;
+                ticks = 0;
                 Execute.Enabled = false;
+                Fade.Enabled = true;
             }
             else { token.BackColor = Color.White; Execute.Enabled = true; }
         }
+
         private void CheckToken(object sender, EventArgs e)
         {
-            if (token.TextLength < 60)
+            if (token.TextLength != 85)
             {
                 ChangeColor(true);
             }
@@ -75,43 +88,38 @@ namespace VKClips
                 TestApi();
             }
         }
-        string realfile = "";
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {
             FPath.Text = OpenMP4.FileName;
-            realfile = OpenMP4.FileName;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             OpenMP4.ShowDialog();
         }
-
-        private void GIDCheck(object sender, EventArgs e)
-        {
-            GID.Enabled = checkBox1.Checked;
-        }
-
         private void Execute_Click(object sender, EventArgs e)
         {
-            Dictionary<string, string> param = new Dictionary<string, string>();
-            if (File.Exists(FPath.Text))
+            foreach (ListViewItem item in listView1.Items)
             {
-                string file = FPath.Text;
-                if (Title.Text.Length > 1)
+                Dictionary<string, string> param = new Dictionary<string, string>();
+                if (File.Exists(item.Name))
                 {
-                    param.Add("title", Title.Text);
+                    string file = item.Name;
+                    if (item.SubItems.ContainsKey("title"))
+                    {
+                        param.Add("title", item.SubItems["title"].Text);
+                    }
+                    if (item.SubItems.ContainsKey("title"))
+                    {
+                        param.Add("description", item.SubItems["title"].Text);
+                    }
+                    if (item.SubItems.ContainsKey("title"))
+                    {
+                        param.Add("group_id", item.SubItems["title"].Text);
+                    }
+                    param.Add("file_size", new FileInfo(file).Length.ToString());
+                    UploadClip(file, param);
                 }
-                if (Description.Text.Length > 1)
-                {
-                    param.Add("description", Description.Text);
-                }
-                if (checkBox1.Checked && GID.Text.Length > 2)
-                {
-                    param.Add("group_id", GID.Text);
-                }
-                param.Add("file_size", new FileInfo(file).Length.ToString());
-                UploadClip(file, param);
             }
         }
 
@@ -131,6 +139,68 @@ namespace VKClips
             }
             else
                 e.Effect = DragDropEffects.None;
+        }
+
+        private void AddTask(object sender, EventArgs e)
+        {
+            if (File.Exists(FPath.Text))
+            {
+                ListViewItem item = new ListViewItem(FPath.Text);
+                if (Title.Text.Length > 1)
+                {
+                    var b = new ListViewItem.ListViewSubItem();
+                    b.Name = "title";
+                    b.Text = Title.Text;
+                    item.SubItems.Add(b);
+                }
+                if (Description.Text.Length > 1)
+                {
+                    var c = new ListViewItem.ListViewSubItem();
+                    c.Name = "desc";
+                    c.Text = Description.Text;
+                    item.SubItems.Add(c);
+                }
+                if (GID.Text.Length > 2)
+                {
+                    var d = new ListViewItem.ListViewSubItem();
+                    d.Name = "gid";
+                    d.Text = GID.Text;
+                    item.SubItems.Add(d);
+                }
+                listView1.Items.Add(item);
+            }
+        }
+
+        private void token_Enter(object sender, EventArgs e)
+        {
+            if (ticks == 100)
+            {
+                start = Color.Red;
+                end = Color.White;
+                offR = (double)(start.R - end.R) / 50;
+                offG = (double)(start.G - end.G) / 50;
+                offB = (double)(start.B - end.B) / 50;
+                ticks = 0;
+                Fade.Enabled = true;
+            }
+        }
+
+        private void Fade_Tick(object sender, EventArgs e)
+        {
+            ticks++;
+            if (ticks == 100)
+            {
+                //ticks = 0;
+                token.BackColor = end;
+                Fade.Enabled = false;
+            }
+            else if (ticks <= 50)
+            {
+                token.BackColor = Color.FromArgb(255,
+                    (byte)(start.R - Math.Truncate(offR * ticks)),
+                    (byte)(start.G - Math.Truncate(offG * ticks)),
+                    (byte)(start.B - Math.Truncate(offB * ticks)));
+            }
         }
     }
 }
