@@ -80,7 +80,7 @@
             this.token.MaxLength = 100;
             this.token.Name = "token";
             this.token.Size = new System.Drawing.Size(500, 23);
-            this.token.TabIndex = 2;
+            this.token.TabIndex = 1;
             this.token.UseSystemPasswordChar = true;
             this.token.Enter += new System.EventHandler(this.token_Enter);
             this.token.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tokenInput);
@@ -92,7 +92,7 @@
             this.Execute.Location = new System.Drawing.Point(316, 236);
             this.Execute.Name = "Execute";
             this.Execute.Size = new System.Drawing.Size(305, 34);
-            this.Execute.TabIndex = 3;
+            this.Execute.TabIndex = 8;
             this.Execute.Text = "Загрузить всё";
             this.Execute.UseVisualStyleBackColor = true;
             this.Execute.Click += new System.EventHandler(this.Execute_Click);
@@ -107,7 +107,7 @@
             this.FPath.Location = new System.Drawing.Point(121, 120);
             this.FPath.Name = "FPath";
             this.FPath.Size = new System.Drawing.Size(164, 23);
-            this.FPath.TabIndex = 4;
+            this.FPath.TabIndex = 2;
             // 
             // PathL
             // 
@@ -124,7 +124,7 @@
             this.button1.Location = new System.Drawing.Point(284, 120);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(26, 23);
-            this.button1.TabIndex = 5;
+            this.button1.TabIndex = 3;
             this.button1.Text = "...";
             this.button1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.button1.UseVisualStyleBackColor = true;
@@ -135,7 +135,7 @@
             this.Title.Location = new System.Drawing.Point(121, 149);
             this.Title.Name = "Title";
             this.Title.Size = new System.Drawing.Size(189, 23);
-            this.Title.TabIndex = 6;
+            this.Title.TabIndex = 4;
             // 
             // TitleL
             // 
@@ -160,7 +160,7 @@
             this.Description.Location = new System.Drawing.Point(121, 178);
             this.Description.Name = "Description";
             this.Description.Size = new System.Drawing.Size(189, 23);
-            this.Description.TabIndex = 6;
+            this.Description.TabIndex = 5;
             // 
             // GroupL
             // 
@@ -195,8 +195,10 @@
             this.listView1.ShowGroups = false;
             this.listView1.Size = new System.Drawing.Size(305, 111);
             this.listView1.TabIndex = 9;
+            this.listView1.TabStop = false;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyPress);
             // 
             // path
             // 
@@ -225,7 +227,7 @@
             this.Add.Location = new System.Drawing.Point(121, 236);
             this.Add.Name = "Add";
             this.Add.Size = new System.Drawing.Size(189, 34);
-            this.Add.TabIndex = 10;
+            this.Add.TabIndex = 7;
             this.Add.Text = "Добавить";
             this.Add.UseVisualStyleBackColor = true;
             this.Add.Click += new System.EventHandler(this.AddTask);

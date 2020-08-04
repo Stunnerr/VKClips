@@ -28,7 +28,7 @@ namespace VKClips
             System.Net.WebClient webClient = new System.Net.WebClient();
             webClient.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
             webClient.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-            webClient.QueryString.Add("v", "5.107");
+            webClient.QueryString.Add("v", "5.130");
             webClient.QueryString.Add("access_token", access_token);
             foreach (var i in param)
             {
@@ -41,17 +41,34 @@ namespace VKClips
         {
             string link = UploadApi(param);
             JObject jObject = JObject.Parse(link);
-            string uploadURL = jObject.SelectToken("$.response.upload_url").Value<string>();
+            string uploadURL = "";
+            try
+            {
+                uploadURL = jObject.SelectToken("$.response.upload_url").Value<string>();
+            }
+            catch (Exception)
+            {
+                int error = jObject.SelectToken("$.error.error_code").Value<int>();
+                switch (error)
+                {
+                    case 15:
+                        MessageBox.Show("Ошибка доступа.");
+                        break;
+                    default:
+                        MessageBox.Show("Неизвестная ошибка: " + jObject.SelectToken("$.error").Value<string>());
+                        break;
+                }
+                return;
+            }
             WebClient webClient = new WebClient();
             webClient.UploadFile(uploadURL, file);
-
         }
         private void TestApi()
         {
             WebClient webClient = new WebClient();
             webClient.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36");
             webClient.Headers.Add("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-            webClient.QueryString.Add("v", "5.123");
+            webClient.QueryString.Add("v", "5.130");
             webClient.QueryString.Add("access_token", access_token);
             ChangeColor(!webClient.DownloadString("https://api.vk.com/method/execute").Contains("{\"response\":null}"));
 
@@ -102,9 +119,9 @@ namespace VKClips
             foreach (ListViewItem item in listView1.Items)
             {
                 Dictionary<string, string> param = new Dictionary<string, string>();
-                if (File.Exists(item.Name))
+                if (File.Exists(item.SubItems[0].Text))
                 {
-                    string file = item.Name;
+                    string file = item.SubItems[0].Text;
                     if (item.SubItems.ContainsKey("title"))
                     {
                         param.Add("title", item.SubItems["title"].Text);
@@ -119,6 +136,7 @@ namespace VKClips
                     }
                     param.Add("file_size", new FileInfo(file).Length.ToString());
                     UploadClip(file, param);
+                    listView1.Items.Remove(item);
                 }
             }
         }
@@ -146,27 +164,18 @@ namespace VKClips
             if (File.Exists(FPath.Text))
             {
                 ListViewItem item = new ListViewItem(FPath.Text);
-                if (Title.Text.Length > 1)
-                {
-                    var b = new ListViewItem.ListViewSubItem();
-                    b.Name = "title";
-                    b.Text = Title.Text;
-                    item.SubItems.Add(b);
-                }
-                if (Description.Text.Length > 1)
-                {
-                    var c = new ListViewItem.ListViewSubItem();
-                    c.Name = "desc";
-                    c.Text = Description.Text;
-                    item.SubItems.Add(c);
-                }
-                if (GID.Text.Length > 2)
-                {
-                    var d = new ListViewItem.ListViewSubItem();
-                    d.Name = "gid";
-                    d.Text = GID.Text;
-                    item.SubItems.Add(d);
-                }
+                var b = new ListViewItem.ListViewSubItem();
+                var c = new ListViewItem.ListViewSubItem();
+                var d = new ListViewItem.ListViewSubItem();
+                b.Name = "title";
+                b.Text = Title.Text;
+                item.SubItems.Add(b);
+                c.Name = "desc";
+                c.Text = Description.Text;
+                item.SubItems.Add(c);
+                d.Name = "gid";
+                d.Text = GID.Text;
+                item.SubItems.Add(d);
                 listView1.Items.Add(item);
             }
         }
@@ -190,7 +199,6 @@ namespace VKClips
             ticks++;
             if (ticks == 100)
             {
-                //ticks = 0;
                 token.BackColor = end;
                 Fade.Enabled = false;
             }
@@ -200,6 +208,17 @@ namespace VKClips
                     (byte)(start.R - Math.Truncate(offR * ticks)),
                     (byte)(start.G - Math.Truncate(offG * ticks)),
                     (byte)(start.B - Math.Truncate(offB * ticks)));
+            }
+        }
+
+        private void listView1_KeyPress(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete) {
+                foreach (ListViewItem item in listView1.SelectedItems)
+                {
+                    listView1.Items.Remove(item);
+                    e.Handled = true;
+                }
             }
         }
     }
